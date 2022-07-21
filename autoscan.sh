@@ -23,11 +23,11 @@ TOOL_DIR="/tools"
 LOG_DIR=$LOG/$CUSTOMER/$(date | md5sum | awk {'print $1'})
 echo $LOG_DIR
 mkdir -p $LOG_DIR
-USER_FILE="/usr/share/brutex/wordlists/simple-users.txt"
+USER_FILE="/usr/share/brutex/BruteX/wordlists/simple-users.txt"
 PASS_FILE="/usr/share/wordlists/rockyou.txt"
-DNS_FILE="/usr/share/brutex/wordlists/namelist.txt"
+DNS_FILE="/usr/share/brutex/BruteX/wordlists/namelist.txt"
 UDP_PORTS="53,67,68,69,88,123,161,162,137,138,139,389,520,2049"
-SAMRDUMP="/media/sf_KaliSharedFolder/tools/autoscan/tools/samrdump.py"
+SAMRDUMP="impacket-samrdump"
 WORKSPACE=$CustomerName
 USER_FILE="/usr/share/wordlists/metasploit/unix_users.txt"
 PASS_FILE="/usr/share/wordlists/rockyou.txt"
@@ -399,7 +399,7 @@ then
 else
   echo -e "$ORANGE + -- --=[Port 79 opened... running tests... ${RESET}"
   nmap -A -sV -Pn  --script=finger* -p 79 $TARGET   
-  bin/fingertool.sh $TARGET $USER_FILE > $LOG_DIRfinger.log # 
+  /tools/Sn1per/bin/fingertool.sh $TARGET $USER_FILE > $LOG_DIRfinger.log # 
 fi
 
 if [ -z "$port_80" ];

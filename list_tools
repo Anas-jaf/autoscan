@@ -1,6 +1,7 @@
-https://github.com/x90skysn3k/listmap
-https://github.com/1N3/BruteX
-https://github.com/laramies/metagoofil
-https://github.com/jtesta/ssh-audit
-https://github.com/aboul3la/Sublist3r
-https://github.com/joaomatosf/jexboss
+sudo git clone https://github.com/x90skysn3k/listmap
+sudo git clone https://github.com/1N3/BruteX
+sudo git clone https://github.com/laramies/metagoofil
+sudo git clone https://github.com/jtesta/ssh-audit
+sudo git clone https://github.com/aboul3la/Sublist3r
+sudo git clone https://github.com/joaomatosf/jexboss
+sudo apt install python3-impacket
