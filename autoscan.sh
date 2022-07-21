@@ -12,14 +12,14 @@ RESET='\e[0m'
 TARGET=$1
 CUSTOMER=$2
 LOG=$3
-ReportServer=$4
+# ReportServer=$4
 #
 localIP=$(hostname -I)
 echo $localIP
 CustomerName=$CUSTOMER
 workspace=$CUSTOMER
 WORK_DIR="/media/sf_KaliSharedFolder/tools/autoscan"
-TOOL_DIR="/media/sf_KaliSharedFolder/tools/autoscan/tools"
+TOOL_DIR="/tools"
 LOG_DIR=$LOG/$CUSTOMER/$(date | md5sum | awk {'print $1'})
 echo $LOG_DIR
 mkdir -p $LOG_DIR
@@ -31,7 +31,7 @@ SAMRDUMP="/media/sf_KaliSharedFolder/tools/autoscan/tools/samrdump.py"
 WORKSPACE=$CustomerName
 USER_FILE="/usr/share/wordlists/metasploit/unix_users.txt"
 PASS_FILE="/usr/share/wordlists/rockyou.txt"
-LHOST=$(ifconfig  eth0 | grep -w inet | awk {'print $2'})
+LHOST=$(ifconfig  wlan0 | grep -w inet | awk {'print $2'})
 SRVHOST=$LHOST
 #
 echo -e "$GREEN"
@@ -802,7 +802,7 @@ else
   echo -e "${GREEN}====================================================================================${RESET}"
   echo -e "$RED GATHERING SSL/TLS INFO ${RESET}"
   echo -e "${GREEN}====================================================================================${RESET}"
-  python $TOOL_DIR/sslcheck.py --xml $LOG_DIR/$TARGET.sslcheck_443.xml $TARGET -port 443  
+  # python $TOOL_DIR/sslcheck.py --xml $LOG_DIR/$TARGET.sslcheck_443.xml $TARGET -port 443  
   sslscan --no-failed $TARGET  >> $LOG_DIR/$TARGET.sslscan.txt  
   echo ""
   ##echo -e "${GREEN}====================================================================================${RESET}"
@@ -992,7 +992,7 @@ else
   echo ""
   python /media/sf_KaliSharedFolder/tools/autoscan/tools/XSSTracer/xsstracer.py $TARGET 4443 
   sslscan --no-failed $TARGET:4443
-  python $TOOL_DIR/sslcheck.py  --xml $LOG_DIR/$TARGET.sslcheck_4443.xml $TARGET -port 4443
+  # python $TOOL_DIR/sslcheck.py  --xml $LOG_DIR/$TARGET.sslcheck_4443.xml $TARGET -port 4443
   nikto -h http://$TARGET:$PORT -Format xml -o $LOG_DIR/$TARGET.nikto.4443.xml
   #cutycapt --url=https://$TARGET:4443 --out=$LOG_DIR/$TARGET-port4443.jpg 2> /dev/null
   nmap -sV -Pn -A -p 4443  --script=*proxy* $TARGET -oX $LOG_DIR/$TARGET.nmap4443.xml 
@@ -1128,7 +1128,7 @@ else
   echo ""
   python /media/sf_KaliSharedFolder/tools/autoscan/tools/XSSTracer/xsstracer.py $TARGET 8180
   sslscan --no-failed $TARGET:8180
-  python $TOOL_DIR/sslcheck.py --xml $LOG_DIR/$TARGET.sslcheck_8180.xml $TARGET -port 8180
+  # python $TOOL_DIR/sslcheck.py --xml $LOG_DIR/$TARGET.sslcheck_8180.xml $TARGET -port 8180
   nikto -h http://$TARGET:$PORT -Format xml -o $LOG_DIR/$TARGET.nikto.8180.xml
   cutycapt --url=http://$TARGET:8180 --out=$LOG_DIR/$TARGET-port8180.jpg  
   nmap -sV -Pn --script=/usr/share/nmap/scripts/http-vuln-cve2017-5638.nse -p 8180  --script=*proxy* $TARGET -oX $LOG_DIR/$TARGET.nmap_8180.xml   
@@ -1157,7 +1157,7 @@ else
   echo ""
   python /media/sf_KaliSharedFolder/tools/autoscan/tools/XSSTracer/xsstracer.py $TARGET 8443
   sslscan --no-failed $TARGET:8443
-  python $TOOL_DIR/sslcheck.py  --xml $LOG_DIR/$TARGET.sslcheck_8443.xml $TARGET -port 8443
+  # python $TOOL_DIR/sslcheck.py  --xml $LOG_DIR/$TARGET.sslcheck_8443.xml $TARGET -port 8443
   nikto -h https://$TARGET:$PORT -Format xml -o $LOG_DIR/$TARGET.nikto.8443.xml
   cutycapt --url=https://$TARGET:8443 --out=$LOG_DIR/$TARGET-port8443.jpg  
   nmap -sV -Pn --script=/usr/share/nmap/scripts/http-vuln-cve2017-5638.nse -A -p 8443  --script=*proxy* $TARGET -oX $LOG_DIR/$TARGET.nmap_8443.xml   
@@ -1263,34 +1263,35 @@ echo "automated metasploit import tool for xml files by @darksh3llgr"
 msfconsole -x "workspace $workspace; db_import $LOG_DIR/*.xml;exit;"
 msfconsole -x "workspace $workspace; db_export -f xml $LOG_DIR/$CUSTOMER.msf.xml;exit;"
 #
-DATE=$(date)
-#
-echo -e "${GREEN}====================================================================================${RESET}"
-echo -e "$RED Import all files in Fraday ${RESET}"
-echo -e "${GREEN}====================================================================================${RESET}"
-echo '#!/usr/bin/python2.7' > $LOG_DIR/$CustomerName.py
-echo 'from persistence.server import server'  >> $LOG_DIR/$CustomerName.py
-echo 'import time' >> $LOG_DIR/$CustomerName.py
-echo 'server.FARADAY_UP = False' >> $LOG_DIR/$CustomerName.py
-echo 'server.SERVER_URL = "http://127.0.0.1:5985"'  >> $LOG_DIR/$CustomerName.py
-echo 'server.AUTH_USER = "faraday"'  >> $LOG_DIR/$CustomerName.py
-echo 'server.AUTH_PASS = "changeme"'  >> $LOG_DIR/$CustomerName.py
-echo 'date_today = int(time.time() * 1000)'  >> $LOG_DIR/$CustomerName.py
-echo "server.create_workspace('$CustomerName', '$CustomerName', '$DATE', '$DATE', '$CustomerName')" >> $LOG_DIR/$CustomerName.py
-#
-scp -P 22 -o StrictHostKeyChecking=no $LOG_DIR/$CustomerName.py root@$ReportServer:/root/infobyte/faraday/.
-ssh -p 22 -o StrictHostKeyChecking=no root@$ReportServer  "cd /root/infobyte/faraday;python $CustomerName.py;exit"
-#
-faraday=/root/infobyte/faraday
-cd $LOG_DIR
-#
-for XMLfile in $(ls -al | grep  xml | awk '{print $9}');
-        do 
-  echo "Import $XMLfile to faraday"
-  python $faraday/faraday.pyc --cli --workspace $CustomerName -r $LOG_DIR/$XMLfile
-done;
+farady () {
+  DATE=$(date)
+  #
+  echo -e "${GREEN}====================================================================================${RESET}"
+  echo -e "$RED Import all files in Fraday ${RESET}"
+  echo -e "${GREEN}====================================================================================${RESET}"
+  echo '#!/usr/bin/python2.7' > $LOG_DIR/$CustomerName.py
+  echo 'from persistence.server import server'  >> $LOG_DIR/$CustomerName.py
+  echo 'import time' >> $LOG_DIR/$CustomerName.py
+  echo 'server.FARADAY_UP = False' >> $LOG_DIR/$CustomerName.py
+  echo 'server.SERVER_URL = "http://127.0.0.1:5985"'  >> $LOG_DIR/$CustomerName.py
+  echo 'server.AUTH_USER = "faraday"'  >> $LOG_DIR/$CustomerName.py
+  echo 'server.AUTH_PASS = "changeme"'  >> $LOG_DIR/$CustomerName.py
+  echo 'date_today = int(time.time() * 1000)'  >> $LOG_DIR/$CustomerName.py
+  echo "server.create_workspace('$CustomerName', '$CustomerName', '$DATE', '$DATE', '$CustomerName')" >> $LOG_DIR/$CustomerName.py
+  #
+  scp -P 22 -o StrictHostKeyChecking=no $LOG_DIR/$CustomerName.py root@$ReportServer:/root/infobyte/faraday/.
+  ssh -p 22 -o StrictHostKeyChecking=no root@$ReportServer  "cd /root/infobyte/faraday;python $CustomerName.py;exit"
+  #
+  faraday=/root/infobyte/faraday
+  cd $LOG_DIR
+  #
+  for XMLfile in $(ls -al | grep  xml | awk '{print $9}');
+          do 
+    echo "Import $XMLfile to faraday"
+    python $faraday/faraday.pyc --cli --workspace $CustomerName -r $LOG_DIR/$XMLfile
+  done;
 
 
-rm $WORK_DIR/hydra.restore
-rm $WORK_DIR/stash*
-
+  rm $WORK_DIR/hydra.restore
+  rm $WORK_DIR/stash*
+}
