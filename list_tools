@@ -5,3 +5,4 @@ sudo git clone https://github.com/jtesta/ssh-audit
 sudo git clone https://github.com/aboul3la/Sublist3r
 sudo git clone https://github.com/joaomatosf/jexboss
 sudo apt install python3-impacket
+sudo apt install cisco-torch

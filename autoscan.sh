@@ -9,6 +9,9 @@ GREEN='\033[92m'
 ORANGE='\033[93m'
 RESET='\e[0m'
 #
+# to add multiple arguments 
+# https://stackoverflow.com/questions/30061682/bash-send-string-argument-as-multiple-arguments
+
 TARGET=$1
 CUSTOMER=$2
 LOG=$3
@@ -46,7 +49,7 @@ echo "Your Report Server IP / URL is: $4"
 #
 #service postgresql restart
 msfconsole -x "workspace -a "$WORKSPACE"; exit;" > $LOG_DIR/msfworkspace.log #    
-service couchdb restart
+# service couchdb restart
 echo -e "${GREEN}====================================================================================${RESET}"
 echo -e "${GREEN} Enumerate the Operating System, TCP und UDP Ports first ${RESET}"
 echo -e "${GREEN}====================================================================================${RESET}"
