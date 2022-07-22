@@ -45,7 +45,7 @@ echo "You ask me to scan & exploit IP / URL $1"
 #
 echo "You say Customer is: $2"
 echo "You Log path is: $3"
-echo "Your Report Server IP / URL is: $4"
+# echo "Your Report Server IP / URL is: $4"
 #
 #service postgresql restart
 msfconsole -x "workspace -a "$WORKSPACE"; exit;" > $LOG_DIR/msfworkspace.log #    
@@ -69,7 +69,7 @@ nmap_tcp=$LOG_DIR/$TARGET.nmap_tcp.xml
 echo -e "${GREEN}====================================================================================${RESET}"
 echo -e "$GREEN RUNNING default UDP PORT SCAN ${RESET}"
 echo -e "${GREEN}====================================================================================${RESET}"
-echo -e "${RED} - Please whait a moment - "
+echo -e "${RED} - Please wait a moment - "
 echo -e "${RED}"
 nmap -Pn -sU -T4 -p $UDP_PORTS --open $TARGET -oX $LOG_DIR/$TARGET.nmap_udp.xml -oG $LOG_DIR/$TARGET.portsUDP.gnmap   
 msfconsole -x "workspace $WORKSPACE; db_import $LOG_DIR/$TARGET.nmap_udp.xml; exit"  
